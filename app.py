@@ -119,9 +119,10 @@ scaler_x_path = os.path.join(BASE_DIR, "scaler_x.save")
 scaler_y_path = os.path.join(BASE_DIR, "scaler_y.save")
 
 # Load model and scalers once at startup
-model = load_model(model_path)
-scaler_x = joblib.load(scaler_x_path)
-scaler_y = joblib.load(scaler_y_path)
+model = load_model("house_rent_lstm_model.h5")
+scaler_x = joblib.load("scaler_x.save")
+scaler_y = joblib.load("scaler_y.save")
+
 
 @app.route('/')
 def home():
