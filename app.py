@@ -103,11 +103,13 @@
 
 
 #app.py
+import os 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 from flask import Flask, request, jsonify, render_template
 from keras.models import load_model
 import numpy as np
 import joblib
-import os
+
 
 app = Flask(__name__)
 
