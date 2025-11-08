@@ -1,3 +1,5 @@
-echo "Setting up environment..."
+#!/bin/bash
+echo "🚀 Setting up environment..."
 pip install -r requirements.txt
-python main.py
+echo "✅ Packages installed successfully."
+python app.py
