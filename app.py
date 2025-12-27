@@ -97,7 +97,7 @@ def set_bg(image_file):
         unsafe_allow_html=True
     )
 
-set_bg("assets/house3.jpg")
+set_bg("house3.jpg")
 
 # ---------- UI ----------
 st.markdown(
