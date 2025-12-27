@@ -62,44 +62,104 @@
 
 
 
+
+
+
 import streamlit as st
 import numpy as np
 import joblib
 from keras.models import load_model
+import base64
 import os
 
-# Force CPU
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-# Load model & scalers
+# Load model and scalers
 model = load_model("house_rent_lstm_model.h5")
 scaler_x = joblib.load("scaler_x.save")
 scaler_y = joblib.load("scaler_y.save")
 
-st.set_page_config(page_title="House Rent Prediction", layout="centered")
+# ---------- Background Image ----------
+def set_bg(image_file):
+    with open(image_file, "rb") as f:
+        encoded = base64.b64encode(f.read()).decode()
 
-st.title("🏠 House Rent Price Prediction")
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpg;base64,{encoded}");
+            background-size: cover;
+            background-position: left center;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-st.write("Enter details to predict house rent")
+set_bg("assets/house3.jpg")
 
-# Inputs
-bhk = st.number_input("BHK", min_value=1, step=1)
-size = st.number_input("House Size (sqft)", min_value=100)
-area_type = st.number_input("Area Type (Encoded)")
-city = st.number_input("City (Encoded)")
-furnishing_status = st.number_input("Furnishing Status (Encoded)")
-tenant_preferred = st.number_input("Tenant Preferred (Encoded)")
-bathroom = st.number_input("Bathrooms", min_value=1, step=1)
+# ---------- UI ----------
+st.markdown(
+    """
+    <style>
+    .block-container {
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: 40px;
+        background: #413735;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.title("House Rent Prediction")
+
+bhk = st.number_input("Number of BHK", min_value=1, max_value=10)
+size = st.number_input("Size (in Sq.Ft)", min_value=10)
+
+area_type = st.selectbox(
+    "Area Type",
+    {"Super Area": 1, "Carpet Area": 2, "Built Area": 3}.items(),
+    format_func=lambda x: x[0]
+)[1]
+
+city = st.selectbox(
+    "Select City",
+    {
+        "Mumbai": 4000,
+        "Chennai": 6000,
+        "Bangalore": 5600,
+        "Hyderabad": 5000,
+        "Delhi": 1100,
+        "Kolkata": 7000,
+    }.items(),
+    format_func=lambda x: x[0]
+)[1]
+
+furnishing_status = st.selectbox(
+    "Furnishing Status",
+    {"Unfurnished": 0, "Semi-Furnished": 1, "Furnished": 2}.items(),
+    format_func=lambda x: x[0]
+)[1]
+
+tenant_preferred = st.selectbox(
+    "Tenant Type",
+    {"Bachelors": 1, "Bachelors/Family": 2, "Family": 3}.items(),
+    format_func=lambda x: x[0]
+)[1]
+
+bathroom = st.number_input("Number of Bathrooms", min_value=1, max_value=10)
 
 if st.button("Predict Rent"):
     features = np.array([
-        bhk,
-        size,
-        area_type,
-        city,
-        furnishing_status,
-        tenant_preferred,
-        bathroom
+        bhk, size, area_type, city,
+        furnishing_status, tenant_preferred, bathroom
     ]).reshape(1, -1)
 
     features_scaled = scaler_x.transform(features)
@@ -110,17 +170,7 @@ if st.button("Predict Rent"):
 
     rent = round(float(prediction[0][0]), 2)
 
-    st.success(f"💰 Predicted Monthly Rent: ₹ {rent}")
-
-
-
-
-
-
-
-
-
-
+    st.success(f"💰 Predicted Rent: ₹ {rent}")
 
 
 
